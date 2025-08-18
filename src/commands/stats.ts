@@ -13,12 +13,18 @@ composer.command("stats", async (ctx) => {
 
   if (!env.ADMIN_USERS.includes(ctx.from.id)) return;
 
-  const [{ usersCount }] = await db
-    .select({ usersCount: count(usersTable.id) })
-    .from(usersTable);
-  const [{ groupsCount }] = await db
-    .select({ groupsCount: countDistinct(leaderboardTable.chatId) })
-    .from(leaderboardTable);
+  const [usersResult, groupsResult] = await Promise.all([
+    db
+      .select({ usersCount: count(usersTable.id) })
+      .from(usersTable),
+    db
+      .select({ groupsCount: countDistinct(leaderboardTable.chatId) })
+      .from(leaderboardTable)
+      .where(like(leaderboardTable.chatId, "-1%"))
+  ]);
+
+  const usersCount = usersResult[0].usersCount;
+  const groupsCount = groupsResult[0].groupsCount;
 
   return ctx.reply(`Total Users: ${usersCount}\nTotal Groups: ${groupsCount}`);
 });

@@ -1,6 +1,6 @@
 import { Composer } from "grammy";
 
-import { count, countDistinct } from "drizzle-orm";
+import { count, countDistinct, like } from "drizzle-orm";
 
 import { env } from "../config/env";
 import { db } from "../drizzle/db";
